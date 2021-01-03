@@ -1,10 +1,16 @@
-<% layout('layouts/boilerplate') %>
+<% layout('layouts/boilerplate')%>
+
 <h1>All Questions</h1>
 <div>
     <a href="/questions/ask">Ask a new question</a>
 </div>
-<ul>
-    <% for (let question of questions) { %>
-        <li><a href="/questions/<%= question.id %>"><%= question.title %></a></li>
-    <% } %>
-</ul>
+<% for (let question of questions) { %>
+<div class="card mb-3">
+    <div class="container">
+        <h5 class="card-title">
+            <a href="/questions/<%= question.id %>"><%= question.title %></a>
+        </h5>
+        <p class="card-text"><%= question.content %></p>
+    </div>
+</div>
+<% } %>
