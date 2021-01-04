@@ -1,16 +1,23 @@
 <% layout('layouts/boilerplate')%>
 
-<h1>All Questions</h1>
-<div>
-    <a href="/questions/ask">Ask a new question</a>
-</div>
-<% for (let question of questions) { %>
-<div class="card mb-3">
-    <div class="container">
-        <h5 class="card-title">
-            <a href="/questions/<%= question.id %>"><%= question.title %></a>
-        </h5>
-        <p class="card-text"><%= question.content %></p>
+    <h1>All Questions</h1>
+    <div>
+        <a href="/questions/ask">Ask a new question</a>
     </div>
-</div>
-<% } %>
+    <% for (let question of questions) { %>
+        <div class="card mb-3">
+            <div class="container">
+                <h5 class="card-title">
+                    <a href="/questions/<%= question.id %>">
+                        <%= question.title %>
+                    </a>
+                </h5>
+                <p class="card-text">
+                    <%= question.content %>
+                </p>
+                <p class="card-text">
+                    <small class="text-muted">Created 0 days ago</small>
+                </p>
+            </div>
+        </div>
+        <% } %>

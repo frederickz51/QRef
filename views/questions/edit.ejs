@@ -1,11 +1,12 @@
 <% layout('layouts/boilerplate') %>
     <div class="row">
         <h1>Edit Question</h1>
-        <form action="/questions" method="POST">
+        <form action="/questions" method="POST" class="valid-form" novalidate>
             <div class="mb-3">
                 <label class="form-label" for="title"><b>Title</b></label>
-                <input class="form-control" type="text" id="title" name="question[title]"
-                    value="<%= question.title %>" />
+                <input class="form-control" type="text" id="title" name="question[title]" value="<%= question.title %>"
+                    required />
+                <div class="invalid-feedback">Please enter a title for your question.</div>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="content"><b>Content</b></label>
