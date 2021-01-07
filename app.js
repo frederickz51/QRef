@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const catchAsync = require('./utils/CatchAsync')
 const ExpressError = require('./utils/ExpressError')
+const { questionJoiSchema } = require('./utils/JoiSchemas')
 const methodOverride = require('method-override')
 const Question = require('./models/question');
 
@@ -30,6 +31,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
 
+const validateQuestion = (req, res, next) => {
+    const { error } = questionJoiSchema.validate(req.body)
+    if (error) {
+        const detail = error.details.map(el => el.message).join(', ')
+        throw new ExpressError(400, "Invalid Question Data", detail)
+    } else {
+        next();
+    }
+    console.log(result)
+}
+
+
 app.get('/', (req, res) => {
     res.render('home')
 });
@@ -44,8 +57,7 @@ app.get('/questions/ask', catchAsync(async (req, res) => {
     res.render('questions/ask')
 }));
 
-app.post('/questions', catchAsync(async (req, res, next) => {
-    if (!req.body.question) throw new ExpressError("Invalid Question Datad", 400);
+app.post('/questions', validateQuestion, catchAsync(async (req, res, next) => {
     const question = new Question(req.body.question)
     await question.save()
     res.redirect(`/questions/${question._id}`)
@@ -62,7 +74,7 @@ app.get('/questions/:id/edit', catchAsync(async (req, res) => {
     res.render('questions/edit', { question })
 }));
 
-app.put('/questions/:id', catchAsync(async (req, res) => {
+app.put('/questions/:id', validateQuestion, catchAsync(async (req, res) => {
     const { id } = req.params
     const question = await Question.findByIdAndUpdate(id, { ...req.body.question })
     res.redirect(`/questions/${question._id}`)
@@ -76,13 +88,15 @@ app.delete('/questions/:id', catchAsync(async (req, res) => {
 
 
 app.all('*', (req, res, next) => {
-    next(new ExpressError("Page Not Found", 404))
+    const fullUrl = req.protocol + "://" + req.get('host') + req.url
+    next(new ExpressError(404, "Page Not Found", "This site does not exist: " + fullUrl))
 });
 
-app.use((err, req, res, next) => {
-    const { statusCode = 500 } = err
-    if (!err.message) err.message = "Unknown Error"
-    res.status(statusCode).render('error', { err })
+app.use((error, req, res, next) => {
+    const { statusCode = 500 } = error
+    if (!error.message) error.message = "Unknown Error"
+    if (!error.detail) error.detail = "Unknown error occurs."
+    res.status(statusCode).render('error', { error })
 });
 
 app.listen(3000, () => {

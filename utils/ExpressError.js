@@ -1,10 +1,11 @@
 const { STATES } = require("mongoose");
 
 class ExpressError extends Error {
-    constructor(message, statusCode) {
+    constructor(statusCode, message, detail) {
         super();
-        this.message = message;
         this.statusCode = statusCode;
+        this.message = message;
+        this.detail = detail;
     }
 }
 
