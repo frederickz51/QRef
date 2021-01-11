@@ -2,11 +2,12 @@ const express = require('express');
 const path = require('path')
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
-const catchAsync = require('./utils/CatchAsync')
+const catchAsync = require('./utils/catchAsync')
 const ExpressError = require('./utils/ExpressError')
 const { questionJoiSchema } = require('./utils/JoiSchemas')
 const methodOverride = require('method-override')
 const Question = require('./models/question');
+const Answer = require('./models/answer')
 
 
 mongoose.connect("mongodb://localhost:27017/qref", {
@@ -66,7 +67,7 @@ app.post('/questions', validateQuestion, catchAsync(async (req, res, next) => {
 
 app.get('/questions/:id', catchAsync(async (req, res) => {
     const question = await Question.findById(req.params.id)
-    res.render('questions/show', { question })
+    res.render('questions/view', { question })
 }));
 
 app.get('/questions/:id/edit', catchAsync(async (req, res) => {
@@ -85,6 +86,15 @@ app.delete('/questions/:id', catchAsync(async (req, res) => {
     await Question.findByIdAndDelete(id)
     res.redirect('/questions')
 }));
+
+app.post('/questions/:id/answer', catchAsync(async (req, res) => {
+    const question = await Question.findById(req.params.id)
+    const answer = new Answer(req.body.answer)
+    question.answers.push(answer)
+    await answer.save()
+    await question.save()
+    res.redirect(`/questions/${question._id}`)
+}))
 
 
 app.all('*', (req, res, next) => {
