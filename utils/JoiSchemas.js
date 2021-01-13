@@ -6,3 +6,10 @@ module.exports.questionJoiSchema = Joi.object({
         content: Joi.string(),
     }).required()
 });
+
+module.exports.answerJoiSchema = Joi.object({
+    answer: Joi.object({
+        reference: Joi.string().required(),
+        comment: Joi.string()
+    }).required()
+});

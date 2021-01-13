@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const catchAsync = require('./utils/catchAsync')
 const ExpressError = require('./utils/ExpressError')
-const { questionJoiSchema } = require('./utils/JoiSchemas')
+const { questionJoiSchema, answerJoiSchema } = require('./utils/JoiSchemas')
 const methodOverride = require('method-override')
 const Question = require('./models/question');
 const Answer = require('./models/answer')
@@ -43,6 +43,17 @@ const validateQuestion = (req, res, next) => {
     console.log(result)
 }
 
+const validateAnswer = (req, res, next) => {
+    const { error } = answerJoiSchema.validate(req.body)
+    if (error) {
+        const detail = error.details.map(el => el.message).join(', ')
+        throw new ExpressError(400, "Invalid Question Data", detail)
+    } else {
+        next()
+    }
+    console.log(result)
+}
+
 
 app.get('/', (req, res) => {
     res.render('home')
@@ -63,7 +74,6 @@ app.post('/questions', validateQuestion, catchAsync(async (req, res, next) => {
     await question.save()
     res.redirect(`/questions/${question._id}`)
 }));
-
 
 app.get('/questions/:id', catchAsync(async (req, res) => {
     const question = await Question.findById(req.params.id)
@@ -87,7 +97,8 @@ app.delete('/questions/:id', catchAsync(async (req, res) => {
     res.redirect('/questions')
 }));
 
-app.post('/questions/:id/answer', catchAsync(async (req, res) => {
+
+app.post('/questions/:id/answer', validateAnswer, catchAsync(async (req, res) => {
     const question = await Question.findById(req.params.id)
     const answer = new Answer(req.body.answer)
     question.answers.push(answer)
