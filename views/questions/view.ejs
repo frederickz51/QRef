@@ -18,18 +18,31 @@
             2 days ago
         </div>
     </div>
-
-    <form action="/questions/<%= question._id %>/answer" method="POST" class="mb-3 valid-form" novalidate>
-        <div class="mb-3">
-            <label class="form-label" for="reference">Reference</label>
-            <input class="form-control" type="text" id="reference" name="answer[reference]" required />
-            <div class="invalid-feedback">Please provide a reference.</div>
-        </div>
-        <div class="mb-3">
-            <label class="form-label" for="comment">Comment</label>
-            <textarea class="form-control" name="answer[comment]" id="comment"></textarea>
-        </div>
-        <div class="mb-3">
-            <button class="btn btn-success">Send Reference</button>
-        </div>
-    </form>
+    <div>
+        <form action="/questions/<%= question._id %>/answers" method="POST" class="mb-3 valid-form" novalidate>
+            <div class="mb-3">
+                <label class="form-label" for="reference">Reference</label>
+                <input class="form-control" type="text" id="reference" name="answer[reference]" required />
+                <div class="invalid-feedback">Please provide a reference.</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="comment">Comment</label>
+                <textarea class="form-control" name="answer[comment]" id="comment"></textarea>
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-success">Send Reference</button>
+            </div>
+        </form>
+        <% for (let answer of question.answers) { %>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <%= answer.reference %>
+                    </h5>
+                    <p class="card-text">
+                        <%= answer.comment %>
+                    </p>
+                </div>
+            </div>
+            <% } %>
+    </div>

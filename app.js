@@ -51,7 +51,6 @@ const validateAnswer = (req, res, next) => {
     } else {
         next()
     }
-    console.log(result)
 }
 
 
@@ -76,7 +75,8 @@ app.post('/questions', validateQuestion, catchAsync(async (req, res, next) => {
 }));
 
 app.get('/questions/:id', catchAsync(async (req, res) => {
-    const question = await Question.findById(req.params.id)
+    const question = await Question.findById(req.params.id).populate('answers')
+    console.log(question)
     res.render('questions/view', { question })
 }));
 
@@ -98,7 +98,7 @@ app.delete('/questions/:id', catchAsync(async (req, res) => {
 }));
 
 
-app.post('/questions/:id/answer', validateAnswer, catchAsync(async (req, res) => {
+app.post('/questions/:id/answers', validateAnswer, catchAsync(async (req, res) => {
     const question = await Question.findById(req.params.id)
     const answer = new Answer(req.body.answer)
     question.answers.push(answer)
