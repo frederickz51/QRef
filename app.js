@@ -40,7 +40,6 @@ const validateQuestion = (req, res, next) => {
     } else {
         next();
     }
-    console.log(result)
 }
 
 const validateAnswer = (req, res, next) => {
@@ -76,7 +75,6 @@ app.post('/questions', validateQuestion, catchAsync(async (req, res, next) => {
 
 app.get('/questions/:id', catchAsync(async (req, res) => {
     const question = await Question.findById(req.params.id).populate('answers')
-    console.log(question)
     res.render('questions/view', { question })
 }));
 
@@ -106,6 +104,13 @@ app.post('/questions/:id/answers', validateAnswer, catchAsync(async (req, res) =
     await question.save()
     res.redirect(`/questions/${question._id}`)
 }))
+
+app.delete('/questions/:id/answers/:answerId', catchAsync(async (req, res) => {
+    const { id, answerId } = req.params
+    await Question.findByIdAndUpdate(id, { $pull: { answers: answerId } })
+    await Answer.findByIdAndDelete(answerId)
+    res.redirect(`/questions/${id}`)
+}));
 
 
 app.all('*', (req, res, next) => {

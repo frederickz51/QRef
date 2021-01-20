@@ -42,6 +42,10 @@
                     <p class="card-text">
                         <%= answer.comment %>
                     </p>
+                    <form class="d-inline"
+                        action="/questions/<%= question._id %>/answers/<%= answer._id %>?_method=DELETE" method="POST">
+                        <button class="btn btn-danger">Delete</button>
+                    </form>
                 </div>
             </div>
             <% } %>
